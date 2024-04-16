@@ -33,9 +33,8 @@ jobs:
         env:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
         run: |
-          npm install
-          node .github/scripts/generate.js .
-          node .github/scripts/send.js '${{ steps.issue_info.outputs.title }} ${{ steps.issue_info.outputs.body }}'
+          node .github/scripts/generate.mjs .
+          node .github/scripts/send.mjs '${{ steps.issue_info.outputs.title }} ${{ steps.issue_info.outputs.body }}'
           
       - name: Add comment
         uses: actions/github-script@v6
