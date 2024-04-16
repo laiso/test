@@ -30,6 +30,9 @@ function concatenateFilesRecursively(dir, filesData, basePath = dir) {
 }
 
 function shouldIgnore(file, basePath) {
+    if (file.startsWith(path.join(basePath, '.github'))) {
+        return true; // Ignore all files and directories under .github
+    }
     const ignorePatterns = getIgnorePatterns(basePath);
     const isDirectory = fs.statSync(file).isDirectory();
     const relativePath = path.relative(basePath, file) + (isDirectory ? '/' : '');
