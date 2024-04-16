@@ -7,7 +7,7 @@ const issue = process.argv[2];
 console.log(`Received issue for processing: ${issue}`);
 
 function readFile() {
-    fs.readFile('out/all_files.json', 'utf8', (err, data) => {
+    fs.readFile('out/all_files.csv', 'utf8', (err, data) => {
         if (err) {
             console.error('Error reading the file:', err);
             return;
@@ -32,7 +32,7 @@ ${files}
             }
         ]
     });
-    // console.log(data);
+    console.log(data);
     const options = {
         hostname: 'generativelanguage.googleapis.com',
         path: `/v1beta/models/${model}:generateContent`,
@@ -51,6 +51,9 @@ ${files}
             responseBody += d;
         });
         res.on('end', () => {
+            if (res.statusCode >= 400) {
+                console.log('Response Body:', responseBody);
+            }    
             const responseJson = JSON.parse(responseBody);
             const content = responseJson.candidates[0].content.parts[0].text;
             fs.writeFile('out/answer.txt', content, (err) => {

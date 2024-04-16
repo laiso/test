@@ -15,27 +15,26 @@ function getGitTrackedFiles(basePath) {
 
 function concatenateFilesUsingGit(basePath) {
     const files = getGitTrackedFiles(basePath);
-    const filesData = {};
+    const filesData = [];
     files.forEach(file => {
-        const fullPath = path.join(basePath, file);
-        try {
-            const data = fs.readFileSync(fullPath, 'utf8');
-            filesData[file] = data; // Store file content under its path
-        } catch (err) {
-            console.error(`Error reading file: ${err}`);
+        if (!file.startsWith('.github/')) {
+            const fullPath = path.join(basePath, file);
+            try {
+                const data = fs.readFileSync(fullPath, 'utf8').replace(/"/g, '""'); // Escape double quotes
+                filesData.push(`"${file}","${data}"`); // Format as CSV
+            } catch (err) {
+                console.error(`Error reading file: ${err}`);
+            }
         }
     });
     return filesData;
 }
 
 const directoryPath = process.argv[2] || '.';
-const outputPath = path.join('out', 'all_files.json');
-if (!fs.existsSync('out')) {
-    fs.mkdirSync('out');
-}
+const outputPath = path.join('out', 'all_files.csv'); // Change output file extension to .csv
 try {
     const filesData = concatenateFilesUsingGit(directoryPath);
-    fs.writeFileSync(outputPath, JSON.stringify(filesData));
+    fs.writeFileSync(outputPath, filesData.join('\n')); // Write each file data as a new line in CSV format
 } catch (err) {
     console.error(`Error writing file: ${err}`);
 }
