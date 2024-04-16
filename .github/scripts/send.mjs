@@ -32,7 +32,7 @@ ${files}
             }
         ]
     });
-    console.log(data);
+    // console.log(data);
     const options = {
         hostname: 'generativelanguage.googleapis.com',
         path: `/v1beta/models/${model}:generateContent`,
