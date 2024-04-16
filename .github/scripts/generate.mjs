@@ -29,10 +29,14 @@ function concatenateFilesUsingGit(basePath) {
     });
     return filesData;
 }
-
 const directoryPath = process.argv[2] || '.';
-const outputPath = path.join('out', 'all_files.csv'); // Change output file extension to .csv
+const outputDir = 'out'
+const outputPath = path.join(outputDir, 'all_files.csv'); // Change output file extension to .csv
 try {
+    if (!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir, { recursive: true });
+    }
+    
     const filesData = concatenateFilesUsingGit(directoryPath);
     fs.writeFileSync(outputPath, filesData.join('\n')); // Write each file data as a new line in CSV format
 } catch (err) {
