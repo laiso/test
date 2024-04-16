@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import * as minimatch from 'minimatch';
 
-function concatenateFilesRecursively(dir, outputPath, basePath = dir) {
+function concatenateFilesRecursively(dir, filesData, basePath = dir) {
     try {
         const dirents = fs.readdirSync(dir, { withFileTypes: true });
         dirents.forEach((dirent) => {
@@ -12,15 +12,13 @@ function concatenateFilesRecursively(dir, outputPath, basePath = dir) {
             }
             if (dirent.isDirectory()) {
                 console.log(`Processing directory: ${fullPath}`);
-                concatenateFilesRecursively(fullPath, outputPath, basePath);
+                concatenateFilesRecursively(fullPath, filesData, basePath);
             } else {
                 console.log(`Processing file: ${fullPath}`);
                 try {
                     const data = fs.readFileSync(fullPath, 'utf8');
                     const relativePath = path.relative(basePath, fullPath);
-                    const header = `# ${relativePath}\n`;
-                    const content = `${header}${data}\n\n`;
-                    fs.appendFileSync(outputPath, content);
+                    filesData[relativePath] = data; // Store file content under its path
                 } catch (err) {
                     console.error(`Error reading file: ${err}`);
                 }
@@ -55,13 +53,14 @@ function getIgnorePatterns(directoryPath) {
 }
 
 const directoryPath = process.argv[2] || '.';
-const outputPath = path.join('out', 'all_files_concatenated.txt');
+const outputPath = path.join('out', 'all_files.json');
 if (!fs.existsSync('out')) {
     fs.mkdirSync('out');
 }
 try {
-    fs.writeFileSync(outputPath, '');
-    concatenateFilesRecursively(directoryPath, outputPath);
+    const filesData = {};
+    concatenateFilesRecursively(directoryPath, filesData);
+    fs.writeFileSync(outputPath, JSON.stringify(filesData));
 } catch (err) {
     console.error(`Error writing file: ${err}`);
 }
