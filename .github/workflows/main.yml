@@ -36,9 +36,7 @@ jobs:
           npm install
           node .github/scripts/generate.js .
           node .github/scripts/send.js '${{ steps.issue_info.outputs.title }} ${{ steps.issue_info.outputs.body }}'
-          comment=$(cat ./out/answer.txt)
-          echo "comment=$comment" >> $GITHUB_OUTPUT
-    
+          
       - name: Add comment
         uses: actions/github-script@v6
         with:
