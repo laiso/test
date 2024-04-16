@@ -42,10 +42,11 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            comment=$(cat ./out/answer.txt)
+            const fs = require('fs')
+            const comment = fs.readFileSync('./out/answer.txt', 'utf8')
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: $comment
+              body: comment
             })
